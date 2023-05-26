@@ -9,6 +9,9 @@ module.exports = {
     extend: {
       
     },
+    fontFamily: {
+      'Kanit': ['Kanit', "sans-serif"]
+    }
   },
   plugins: [],
 }
