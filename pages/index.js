@@ -5,12 +5,14 @@ import Overview_icon from '../src/components/Overview_icon';
 import Transfer_icon from '../src/components/Transfer_icon';
 import Profile_icon from '../src/components/Profile_icon';
 import Overview from '../src/components/Overview';
+import Transfer from '@/src/components/Transfer';
+import Profile from '@/src/components/Profile';
 import { useState } from 'react';
 
 export default function Home() {
     const [menu, setMenu] = useState("");
     const mounted = useIsMounted();
-    const { address, isConnected } = useAccount();
+    const {address, isConnected } = useAccount();
     // <p>{mounted ? address : null}</p>
 
     const callPage = () => {
@@ -22,11 +24,11 @@ export default function Home() {
             )
         }else if(menu == "transfer"){
             return(
-                <> Transfer na</>
+                <Transfer/>
             )
         }else{
             return(
-                <> profile na</>
+                <Profile/>
             )
         }
 
