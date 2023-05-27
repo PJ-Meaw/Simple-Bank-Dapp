@@ -6,7 +6,7 @@ import Transfer_icon from '../src/components/Transfer_icon';
 import Profile_icon from '../src/components/Profile_icon';
 import Overview from '../src/components/Overview';
 import Transfer from '@/src/components/Transfer';
-import Profile from '@/src/components/Profile';
+import Withdraw from '@/src/components/Withdraw';
 import { useState } from 'react';
 
 export default function Home() {

@@ -1,4 +1,4 @@
-export default function List_transaction({hash,value,txn,date,time,detail}) {
+export default function List_transaction(hash,value,txn,date,time,detail) {
 
     return (
         <>
