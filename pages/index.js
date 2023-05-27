@@ -1,34 +1,46 @@
+import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
-import { useIsMounted } from '../src/hooks/useIsMounted';
-import Overview_icon from '../src/components/Overview_icon';
-import Transfer_icon from '../src/components/Transfer_icon';
-import Profile_icon from '../src/components/Profile_icon';
+import Overview_icon from '../src/components/icon/Overview_icon';
+import Transfer_icon from '../src/components/icon/Transfer_icon';
+import Profile_icon from '../src/components/icon/Profile_icon';
+
 import Overview from '../src/components/Overview';
 import Transfer from '@/src/components/Transfer';
 import Profile from '@/src/components/Profile';
-import { useState } from 'react';
+import Register from '@/src/components/Register';
+
+import { useIsMounted } from '../src/hooks/useIsMounted';
+import useAccountName from '@/src/hooks/useAccountName';
 
 export default function Home() {
     const [menu, setMenu] = useState("");
     const mounted = useIsMounted();
-    const {address, isConnected } = useAccount();
+    const { address, isConnected } = useAccount();
+    const { data } = useAccountName(address ? address : "")
     // <p>{mounted ? address : null}</p>
 
     const callPage = () => {
+        // data(name) is empty when don't create account -> must create accout before starting
+        if (data == "") {
+            return (
+                <Register />
+            )
+        }
+
         if (menu == "") {
             setMenu("overview")
-        }else if(menu == "overview"){
-            return(
-                <Overview/>
+        } else if (menu == "overview") {
+            return (
+                <Overview />
             )
-        }else if(menu == "transfer"){
-            return(
-                <Transfer/>
+        } else if (menu == "transfer") {
+            return (
+                <Transfer />
             )
-        }else{
-            return(
-                <Profile/>
+        } else {
+            return (
+                <Profile />
             )
         }
 
@@ -54,14 +66,14 @@ export default function Home() {
                     </div>
                     <div className="w-[1300px] h-[800px] bg-[#FFFCFC] rounded-[30px] drop-shadow-[13px_13px_55px_rgba(0,0,0,0.16)]">
                         {
-                            mounted ? 
+                            mounted ?
                                 isConnected ? callPage() :
-                                <>
-                                    <div className="w-full h-full flex flex-row justify-center items-center">
-                                        <ConnectButton showBalance={true} />
-                                    </div>
-                                </>
-                            : null 
+                                    <>
+                                        <div className="w-full h-full flex flex-row justify-center items-center">
+                                            <ConnectButton showBalance={true} />
+                                        </div>
+                                    </>
+                                : null
                         }
                     </div>
                 </div>
