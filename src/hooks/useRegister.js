@@ -1,13 +1,12 @@
 import { useContractWrite, usePrepareContractWrite } from "wagmi"
 
-// import ABI (wait contract is deployed)
-
+import abis from "../../contracts/abis.json" 
 
 export default function useRegister(name) {
     const {config} = usePrepareContractWrite({
-        address: "",
-        abi:"",
-        functionName: "",
+        address: "0x48B4Bba7323528b6B916c232a2e86d5505b69a88",
+        abi:abis,
+        functionName: "registerAccount",
         args: [name],
     });
 
