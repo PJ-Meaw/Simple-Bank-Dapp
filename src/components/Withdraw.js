@@ -1,5 +1,5 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-export default function Withdraw() {
+export default function Withdraw({balance}) {
     const handleSend = () =>{
         alert("send saccess");
     }
@@ -14,7 +14,7 @@ export default function Withdraw() {
                 </div>
                 <div className=' w-[345px] h-[56px] rounded-[15px] bg-[#4566E1] flex justify-start items-center text-white font-normal text-[20px] my-[60px]'>
                     <h1 className='ms-[18px]'>Current Balance :  </h1>
-                    <h1 className='ms-[10px]'>3,000,000.1234</h1>
+                    <h1 className='ms-[10px]'>{ (parseFloat(balance)/Math.pow(10,18)).toFixed(4) }</h1>
                 </div>
                 <div className=' flex flex-col justify-center items-center'>
                     <h1 className='text-[40px] mb-[32px] text-[#7C56A9] '>Current Balance to Send coin </h1>
