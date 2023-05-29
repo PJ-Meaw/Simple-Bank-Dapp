@@ -7,7 +7,7 @@ export default function useDeposit(amount) {
         address: "0x48B4Bba7323528b6B916c232a2e86d5505b69a88",
         abi:abis,
         functionName: "deposit",
-        args: [{value: amount}],
+        value: amount.toString(),
     });
 
     const {data, isLoading, isError, write} = useContractWrite(config)
