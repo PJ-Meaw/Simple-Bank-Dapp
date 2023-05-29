@@ -5,7 +5,7 @@ import { usePrepareContractWrite, useContractWrite, useContractRead, useAccount,
 import { parseUnits } from 'viem';
 
 
-export default function Transfer() {
+export default function Transfer({balance}) {
     const [success, setSuccess] = useState(false);
     const [oppositeAdress, setOppsiteAddress] = useState(null);
     const [amount, setAmount] = useState("");
