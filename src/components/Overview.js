@@ -1,13 +1,8 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import List_transaction from '../components/List_transaction';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+
 export default function Overview({ balance, address, data }) {
-    
-
-
-    
-
     return (
         <>
             <div className='mx-[92px] my-[55px] font-Kanit '>
