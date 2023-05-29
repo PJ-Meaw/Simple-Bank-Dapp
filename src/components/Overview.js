@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 export default function Overview({ balance, address }) {
     const [data, setData] = useState();
-
+1685177940
     useEffect(() => {
         const getTransaction = async () => {
             const res = await axios.get("https://api-goerli.etherscan.io/api?module=account&action=txlist&address=0x48B4Bba7323528b6B916c232a2e86d5505b69a88&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=YourApiKeyToken")
@@ -43,7 +43,7 @@ export default function Overview({ balance, address }) {
                     <div className='h-[345px] overflow-y-auto px-2'>
                         {
                             data?.map((result, i) => {
-                                return <List_transaction hash={result.hash} value={result.value} txn={ ((result.gasUsed *result.gasPrice) / Math.pow(10,18)).toFixed(8) } timeStamp={result.timeStamp} detail="#" key={i} />
+                                return <List_transaction hash={result.hash} value={result.value} txn={ ((result.gasUsed *result.gasPrice) / Math.pow(10,18)).toFixed(8) } timeStamp={result.timeStamp} address={address.toLowerCase()} key={i} />
                             })
                         }
                         {/* <List_transaction hash="0x347347f27374199...." value=" 0 " txn=" 0.00993209 " date=" 25/9/64 " time=" 9.00 PM " detail="#" />
