@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import Router from 'next/router'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
+import { useWaitForTransaction } from "wagmi";
 import Overview_icon from '../src/components/icon/Overview_icon';
 import Transfer_icon from '../src/components/icon/Transfer_icon';
 import Withdraw_icon from '../src/components/icon/Withdraw_icon';
@@ -14,10 +16,13 @@ import Withdraw from '@/src/components/Withdraw';
 import Deposit from '@/src/components/Deposit';
 
 import { useIsMounted } from '../src/hooks/useIsMounted';
-import useAccountName from '@/src/hooks/useAccountName';
-import DeleteAccount from '@/src/components/DeleteAccount';
+import useAccountName from '@/src/hooks/useAccountName';;
+import useDeleteAccount from '@/src/hooks/useDeleteAccount';
+import useGetBalance from '@/src/hooks/useGetBalance';
 
 import { useDisclosure } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
+import { CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
 import {
     AlertDialog,
     AlertDialogBody,
@@ -34,7 +39,12 @@ export default function Home() {
     const mounted = useIsMounted();
     const { address, isConnected } = useAccount();
     const { data } = useAccountName(address ? address : "")
-
+    const {data : balance} = useGetBalance(address ? address : "")
+    const { data: dataDelete, write: deleteAccount } = useDeleteAccount()
+    const { isLoading, isSuccess } = useWaitForTransaction({
+        hash: dataDelete?.hash,
+    })
+    const toast = useToast()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     // <p>{mounted ? address : null}</p>
@@ -47,15 +57,30 @@ export default function Home() {
         if (menu == "") {
             setMenu("overview")
         } else if (menu == "overview") {
-            return <Overview />
+            return <Overview balance={balance} address={address}/>
         } else if (menu == "deposit") {
-            return <Deposit />
+            return <Deposit balance={balance}/>
         } else if (menu == "transfer") {
-            return <Transfer />
+            return <Transfer balance={balance}/>
         } else if (menu == "withdraw") {
-            return <Withdraw />
-        } 
+            return <Withdraw balance={balance}/>
+        }
 
+    }
+    const handledeleteAcoount = () => {
+        console.log("test")
+        deleteAccount();
+    }
+
+    const successful = () => {
+        toast({
+            title: 'Account deleted.',
+            description: "We've deleted your account for you.",
+            status: 'success',
+            duration: 9000,
+            isClosable: true,
+        })
+        Router.reload(window.location.pathname)
     }
 
     return (
@@ -79,13 +104,20 @@ export default function Home() {
                             <Withdraw_icon color={` ${menu == "withdraw" ? "#7C56A9" : "#000000"}`} />
                             <p className={`text-[30px] ${menu == "withdraw" ? "text-[#7C56A9]" : ""}`}>Withdraw</p>
                         </div>
-                        <div className={`w-[253px] h-[87px] "bg-white/0" hover:bg-white/30 rounded-[10px] flex flex-row justify-center items-center gap-[32px] transition duration-500 cursor-pointer`} onClick={() => (onOpen() )}>
-                            <DeleteAccount_icon />
-                            <div className="flex flex-col items-center">
-                                <p className={`text-[30px] text-[#FF0000]`}>Delete</p>
-                                <p className={`text-[30px] text-[#FF0000]`}>Account</p>
-                            </div>
-                        </div>
+                        {
+                            mounted ?
+                                (data != "") && isConnected  ? <>
+                                    <div className={`w-[253px] h-[87px] "bg-white/0" hover:bg-white/30 rounded-[10px] flex flex-row justify-center items-center gap-[32px] transition duration-500 cursor-pointer`} onClick={() => (onOpen())}>
+                                        <DeleteAccount_icon />
+                                        <div className="flex flex-col items-center">
+                                            <p className={`text-[30px] text-[#FF0000]`}>Delete</p>
+                                            <p className={`text-[30px] text-[#FF0000]`}>Account</p>
+                                        </div>
+                                    </div>
+                                </> : ""
+                            : ""
+                        }
+
                     </div>
                     <div className="w-[1300px] h-[800px] bg-[#FFFCFC] rounded-[30px] drop-shadow-[13px_13px_55px_rgba(0,0,0,0.16)]">
                         {
@@ -101,6 +133,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+
             <AlertDialog
                 motionPreset='slideInBottom'
                 leastDestructiveRef={cancelRef}
@@ -113,20 +146,28 @@ export default function Home() {
                 <AlertDialogContent>
                     <AlertDialogHeader className="text-[#FF0000]">Do you want delete Account?</AlertDialogHeader>
                     <AlertDialogCloseButton />
-                    <AlertDialogBody>
-                        Are you sure you want to delete of your account, Your all money will be withdrawed after   
-                        enter "Yes"
+                    <AlertDialogBody> {
+                        isLoading ? <div className="font-Kanit text-[40px] flex flex-row w-full h-full justify-center">Loading <div className="ml-[10px]"><CircularProgress isIndeterminate color='#000000' /></div></div> :
+                            'Are you sure you want to delete of your account, Your all money will be withdrawed after enter "Yes"'
+                    }
                     </AlertDialogBody>
                     <AlertDialogFooter>
-                        <Button ref={cancelRef} onClick={onClose}>
-                            No
-                        </Button>
-                        <Button colorScheme='red' ml={3}>
-                            Yes
-                        </Button>
+                        {
+                            !isLoading && <>
+                                <Button ref={cancelRef} onClick={onClose}>
+                                    No
+                                </Button>
+                                <Button colorScheme='red' ml={3} onClick={handledeleteAcoount}>
+                                    Yes
+                                </Button>
+                            </>
+                        }
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+            {
+                isSuccess ? successful() : ""
+            }
         </>
     )
 }
