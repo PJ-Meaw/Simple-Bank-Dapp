@@ -1,11 +1,63 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { contract } from '@/contractConfig';
+import { usePrepareContractWrite, useContractWrite, useContractRead, useAccount, useWaitForTransaction } from 'wagmi';
+import { parseUnits } from 'viem';
+
+
 export default function Transfer() {
     const [success, setSuccess] = useState(false);
-    const handleSend = () =>{
-        setSuccess(!success);
-        alert("Send Success");
+    const [oppositeAdress, setOppsiteAddress] = useState(null);
+    const [amount, setAmount] = useState("");
+
+    const { address } = useAccount();
+
+    const { data: accountName, isSuccess: ownerExist } = useContractRead({
+        address: contract.address,
+        abi: contract.abi,
+        functionName: 'getAccountName',
+        args: [address]
+    });
+
+    const { data: oppositename, isSuccess: oppositeExist } = useContractRead({
+        address: contract.address,
+        abi: contract.abi,
+        functionName: 'getAccountName',
+        args: [oppositeAdress]
+    });
+
+
+    const { config } = usePrepareContractWrite({
+        address: contract.address,
+        abi: contract.abi,
+        functionName: 'transfer',
+        args: [oppositeAdress, parseUnits(amount, 18)]
+    });
+
+    const { writeAsync, data: transactionData, isSuccess: transferSuccessful} = useContractWrite(config);
+
+    const waitForTransaction = useWaitForTransaction({
+        confirmations: 1,
+        hash: transactionData?.hash
+    });
+
+    useEffect(()=>{
+        if(waitForTransaction.isSuccess == true) {
+            setSuccess(!success);
+            alert("Send Success");
+        }
+    },[waitForTransaction.isSuccess])
+
+    const handleSend = async () =>{
+        
+        try {
+            await writeAsync?.();
+            
+        } catch (err) {
+            alert("Send Failed");
+        }
     }
+
     const handleBack = () =>{
         setSuccess(!success);
         alert("Back to Transfer");
@@ -35,11 +87,11 @@ export default function Transfer() {
                                     <div className=' text-[25px] ms-[23px]'>
                                         <div className='flex flex-row'>
                                             <label className=' font-bold me-[51px]'>Name:</label>
-                                            <p>Pathinya and his friends</p>
+                                            {ownerExist && <p> {accountName}</p>}
                                         </div>
                                         <div className='flex flex-row'>
                                             <label className=' font-bold me-[25px]'>Address:</label>
-                                            <p>0xD39776289A6F1bc672C7093BAD8A67b84062C4F7</p>
+                                            { address && <p>{address}</p> }
                                         </div>
                                     </div>
                                 </div>
@@ -47,11 +99,11 @@ export default function Transfer() {
                                     <div className=' text-[25px] ms-[23px]'>
                                         <div className='flex flex-row'>
                                             <label className=' font-bold me-[51px]'>Name:</label>
-                                            <p>Jansiri and her friends</p>
+                                            {oppositeExist && <p> {oppositename}</p>}
                                         </div>
                                         <div className='flex flex-row'>
                                             <label className=' font-bold me-[25px]'>Address:</label>
-                                            <p>0xD39776289A6F1bc672C7093BAD8A67b84062C4F7</p>
+                                            { oppositeAdress && <p>{oppositeAdress}</p> }
                                         </div>
                                     </div>
                                 </div>
@@ -75,16 +127,26 @@ export default function Transfer() {
                         <div className='justify-center'>
                             <div className='flex flex-row items-center'>
                                 <label className='me-[17px] text-[32px]'>Address :</label>
-                                <input type="text" className=' w-[671px] h-[35px] border-[1px] rounded-[10px] border-[#60C3E1] p-[10px] outline-none' />
+                                <input onChange={e=>setOppsiteAddress(e.target.value)} type="text" className=' w-[671px] h-[35px] border-[1px] rounded-[10px] border-[#60C3E1] p-[10px] outline-none' />
                             </div>
                             <div className='flex flex-row items-center mt-[23px]'>
                                 <label className='me-[17px] text-[32px]'>Amount :</label>
-                                <input type="number" className=' w-[235px] h-[35px] border-[1px] rounded-[10px] border-[#60C3E1] p-[10px] outline-none' />
+                                <input onChange={e=>setAmount(e.target.value)}type="number" className=' w-[235px] h-[35px] border-[1px] rounded-[10px] border-[#60C3E1] p-[10px] outline-none' />
                             </div>
                         </div>
-                            <button className=' w-[186px] h-[58px] mt-[60px] bg-[#74DE72] rounded-[20px] text-[25px] text-white hover:bg-[#429740] transition duration-300' onClick={handleSend} >Transfer</button>
+                            <button disable={waitForTransaction.isLoading} className=' w-[186px] h-[58px] mt-[60px] bg-[#74DE72] rounded-[20px] text-[25px] text-white hover:bg-[#429740] transition duration-300' onClick={handleSend} >{waitForTransaction.isLoading ? "please waiting" : "transfer"}</button>
                     </div>
                 </>
+                }
+                { 
+                    waitForTransaction.isLoading ? 
+                    <>
+                        <div className="w-full h-full flex flex-row justify-center items-center font-Kanit text-[40px]">Loading <div className="ml-[20px]"><CircularProgress isIndeterminate color='#000000' /></div></div>  
+                    </>
+                    :
+                    <>
+                        <div></div>
+                    </>
                 }
                 
             </div>
