@@ -1,7 +1,17 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useWaitForTransaction } from "wagmi";
+import useDeposit from '../hooks/useDeposit';
+import { useState } from 'react';
 export default function Deposit() {
+    const [amount, setAmount] = useState(0);
+    const { data, write: handleDeposit } = useDeposit(amount)
+    const { isLoading, isSuccess } = useWaitForTransaction({
+        hash: data?.hash,
+    })
+    
     const handleSend = () =>{
-        alert("send saccess");
+        handleDeposit();
+        
     }
 
     return (
@@ -19,7 +29,7 @@ export default function Deposit() {
                     <h1 className='text-[40px] mb-[32px] text-[#7C56A9] '>Send coin to Current Balance</h1>
                     <div className='flex flex-row items-center'>
                         <label className='me-[17px] text-[32px]'>Amount :</label>
-                        <input type="number" className=' w-[235px] h-[35px] border-[1px] rounded-[10px] border-[#60C3E1] p-[10px] outline-none' />
+                        <input type="number" className=' w-[235px] h-[35px] border-[1px] rounded-[10px] border-[#60C3E1] p-[10px] outline-none' onChange={(e) => setAmount(e.target.value)} />
                     </div>
                     <button className=' w-[186px] h-[58px] mt-[60px] bg-[#60C3E1] rounded-[20px] text-[25px] text-white hover:bg-[#1fafdb] transition duration-300' onClick={handleSend} >Send coin</button>
                 </div>
