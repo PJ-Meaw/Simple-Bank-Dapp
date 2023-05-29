@@ -22,7 +22,7 @@ export default function List_transaction({ hash, value, txn, timeStamp, address 
                     <div>{txn}</div>
                     <div>{currentdate?.getDate()}/{ (currentdate?.getMonth())+1}/{currentdate?.getFullYear()}</div>
                     <div>{currentdate?.getHours()}:{ ( parseInt(currentdate?.getMinutes())) > 9 ? currentdate?.getMinutes() : `0${currentdate?.getMinutes()}`}:{currentdate?.getMinutes()}</div>
-                    <button className=' text-[#60C3E1] border-2 border-[#60C3E1] h-[53px] w-[141px] rounded-[40px] flex justify-center items-center cursor-pointer'><a href={baseURL+hash}  target="_blank" >Detail</a></button>
+                    <a href={baseURL+hash}  target="_blank" ><button className=' text-[#60C3E1] border-2 border-[#60C3E1] h-[53px] w-[141px] rounded-[40px] flex justify-center items-center cursor-pointer'>Detail</button></a>
                 </div>
             </div>
         </>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Router from 'next/router'
+import axios from 'axios';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { useWaitForTransaction } from "wagmi";
@@ -48,6 +49,21 @@ export default function Home() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     // <p>{mounted ? address : null}</p>
+    const [dataTransaction, setDataTransaction] = useState();
+
+    useEffect(() => {
+        const getTransaction = async () => {
+            const res = await axios.get("https://api-goerli.etherscan.io/api?module=account&action=txlist&address=0x48B4Bba7323528b6B916c232a2e86d5505b69a88&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=YourApiKeyToken")
+            console.log(res.data)
+            const result = res.data.result?.filter((value) => {
+                console.log(value.from + " "  + address.toLowerCase())
+                return (value.from == address.toLowerCase())
+            })
+            setDataTransaction(result)
+            console.log(result)
+        }
+        getTransaction()
+    }, [])
 
     const callPage = () => {
         // data(name) is empty when don't create account -> must create accout before starting
@@ -57,7 +73,7 @@ export default function Home() {
         if (menu == "") {
             setMenu("overview")
         } else if (menu == "overview") {
-            return <Overview balance={balance} address={address}/>
+            return <Overview balance={balance} address={address} data={dataTransaction}/>
         } else if (menu == "deposit") {
             return <Deposit balance={balance}/>
         } else if (menu == "transfer") {

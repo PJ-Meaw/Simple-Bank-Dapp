@@ -2,21 +2,12 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import List_transaction from '../components/List_transaction';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-export default function Overview({ balance, address }) {
-    const [data, setData] = useState();
-1685177940
-    useEffect(() => {
-        const getTransaction = async () => {
-            const res = await axios.get("https://api-goerli.etherscan.io/api?module=account&action=txlist&address=0x48B4Bba7323528b6B916c232a2e86d5505b69a88&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=YourApiKeyToken")
-            const result = res.data.result?.filter((value) => {
-                console.log(value.from + " "  + address.toLowerCase())
-                return (value.from == address.toLowerCase())
-            })
-            setData(result)
-            console.log(result)
-        }
-        getTransaction()
-    }, [])
+export default function Overview({ balance, address, data }) {
+    
+
+
+    
+
     return (
         <>
             <div className='mx-[92px] my-[55px] font-Kanit '>
