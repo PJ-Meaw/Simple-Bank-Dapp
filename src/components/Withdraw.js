@@ -6,7 +6,7 @@ import { CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react'
 import Router from 'next/router'
 
-export default function Withdraw() {
+export default function Withdraw({balance}) {
     const [amount, setAmount] = useState(0);
     const { data, write: handleWithdraw } = useWithdraw(amount*Math.pow(10,18))
     const [loading, setLoading] = useState(true)
@@ -16,13 +16,13 @@ export default function Withdraw() {
     const toast = useToast()
 
     const handleSend = () =>{
-        if (amount > data) { 
+        if (amount*Math.pow(10,18) < balance) { 
             handleWithdraw();
             setLoading(true)
         } else {
             toast({
                 // title: 'Account created.',
-                description: "Please, type your name",
+                description: "Please, enter an amount smaller than the current balance.",
                 status: 'error',
                 duration: 9000,
                 isClosable: true,
@@ -53,7 +53,7 @@ export default function Withdraw() {
                     </div>
                     <div className=' w-[345px] h-[56px] rounded-[15px] bg-[#4566E1] flex justify-start items-center text-white font-normal text-[20px] my-[60px]'>
                         <h1 className='ms-[18px]'>Current Balance :  </h1>
-                        <h1 className='ms-[10px]'>3,000,000.1234</h1>
+                        <h1 className='ms-[10px]'>{(parseFloat(balance) / Math.pow(10, 18)).toFixed(4)}</h1>
                     </div>
                     <div className=' flex flex-col justify-center items-center'>
                         <h1 className='text-[40px] mb-[32px] text-[#7C56A9] '>Current Balance to Send coin </h1>
