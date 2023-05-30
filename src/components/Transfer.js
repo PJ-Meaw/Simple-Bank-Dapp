@@ -37,7 +37,7 @@ export default function Transfer() {
     const { writeAsync, data: transactionData, isSuccess: transferSuccessful} = useContractWrite(config);
 
     const waitForTransaction = useWaitForTransaction({
-        confirmations: 1,
+        confirmations: 5,
         hash: transactionData?.hash
     });
 
@@ -46,7 +46,7 @@ export default function Transfer() {
             setSuccess(!success);
             alert("Send Success");
         }
-    },[waitForTransaction.isSuccess])
+    },[waitForTransaction])
 
     const handleSend = async () =>{
         
@@ -138,7 +138,7 @@ export default function Transfer() {
                     </div>
                 </>
                 }
-                { 
+                {/* { 
                     waitForTransaction.isLoading ? 
                     <>
                         <div className="w-full h-full flex flex-row justify-center items-center font-Kanit text-[40px]">Loading <div className="ml-[20px]"><CircularProgress isIndeterminate color='#000000' /></div></div>  
@@ -147,7 +147,7 @@ export default function Transfer() {
                     <>
                         <div></div>
                     </>
-                }
+                } */}
                 
             </div>
         </>
