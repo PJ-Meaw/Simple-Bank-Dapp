@@ -3,14 +3,18 @@ import { useEffect, useState } from 'react';
 import { contract } from '@/contractConfig';
 import { usePrepareContractWrite, useContractWrite, useContractRead, useAccount, useWaitForTransaction } from 'wagmi';
 import { parseUnits } from 'viem';
+import { CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
+import Router from 'next/router'
 
-
-export default function Transfer() {
+export default function Transfer({balance}) {
     const [success, setSuccess] = useState(false);
     const [oppositeAdress, setOppsiteAddress] = useState(null);
     const [amount, setAmount] = useState("");
 
     const { address } = useAccount();
+    const toast = useToast()
+
 
     const { data: accountName, isSuccess: ownerExist } = useContractRead({
         address: contract.address,
@@ -41,10 +45,20 @@ export default function Transfer() {
         hash: transactionData?.hash
     });
 
+    const successful = () => {
+        toast({
+          title: 'Transfer Success.',
+          description: "We've Transfer coin from your current balance to friend.",
+          status: 'success',
+          duration: 1000,
+          isClosable: true,
+        })
+    }
     useEffect(()=>{
         if(waitForTransaction.isSuccess == true) {
             setSuccess(!success);
-            alert("Send Success");
+            //alert("Send Success");
+            successful();
         }
     },[waitForTransaction])
 
@@ -60,7 +74,7 @@ export default function Transfer() {
 
     const handleBack = () =>{
         setSuccess(!success);
-        alert("Back to Transfer");
+        Router.reload(window.location.pathname)
     }
 
     return (
